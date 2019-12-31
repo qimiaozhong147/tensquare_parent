@@ -1,9 +1,6 @@
 package com.tensquare.user.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,6 +22,7 @@ import util.IdWorker;
 
 import com.tensquare.user.dao.AdminDao;
 import com.tensquare.user.pojo.Admin;
+import util.JwtUtil;
 
 /**
  * 服务层
@@ -42,7 +40,7 @@ public class AdminService {
 	private IdWorker idWorker;
 
 	@Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * 根据登录名和密码查询
@@ -54,6 +52,7 @@ public class AdminService {
         if(bCryptPasswordEncoder.matches(admin.getPassword(), adminLoginname.getPassword()) && adminLoginname != null){
             return admin;
         }
+
         return null;
     }
 
@@ -104,9 +103,11 @@ public class AdminService {
 	 * @param admin
 	 */
 	public void add(Admin admin) {
-		admin.setId( idWorker.nextId()+"" );//获取主键值
+		admin.setId(idWorker.nextId()+"" );//获取主键值
         admin.setPassword(bCryptPasswordEncoder.encode(admin.getPassword()));//加密后
+        System.out.println("添加成功");
 		adminDao.save(admin);
+        System.out.println("添加成功11111111111");
 	}
 
 	/**

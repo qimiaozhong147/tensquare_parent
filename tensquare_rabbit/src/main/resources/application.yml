@@ -3,3 +3,9 @@ server:
 spring:
   rabbitmq:
     host: 192.168.25.129
+eureka:
+  client:
+    service-url: #Eureka客户端与Eureka服务端进行交互的地址
+          defaultZone: http://127.0.0.1:6868/eureka/
+  instance:
+    prefer-ip-address: true #在服务上跨域访问，本地要不要无所谓

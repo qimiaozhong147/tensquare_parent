@@ -2,6 +2,7 @@ package com.tensquare.qa.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.tensquare.qa.client.LabelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,7 +31,15 @@ public class ProblemController {
 	@Autowired
 	private ProblemService problemService;
 	
-	
+	@Autowired
+    private LabelClient labelClient;
+
+    @RequestMapping(value="/label/{id}")
+    public Result findLabelById(@PathVariable("id") String id){
+        Result result= labelClient.findById(id);
+        return result;
+    }
+
 	/**
 	 * 查询全部数据
 	 * @return

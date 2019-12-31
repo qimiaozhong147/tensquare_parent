@@ -6,6 +6,7 @@ import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,16 @@ import java.util.Map;
 public class LabelController {
 
     @Autowired
-    LabelService labelService;
+    private LabelService labelService;
+
+    @Value("${ip}")
+    private String ip;
+
+    @RequestMapping(value = "/getIp", method = RequestMethod.GET)
+    public Result testIp(){
+        System.out.println(ip);
+        return new Result(true, StatusCode.OK, "获取ip成功", ip);
+    }
 
     /**
      * 查询所有标签
@@ -26,6 +36,7 @@ public class LabelController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public Result findAll(){
+        System.out.println(ip);
         List<Label> list = labelService.findAll();
         return new Result(true, StatusCode.OK, "查询所有标签成功！", list);
     }
@@ -35,7 +46,7 @@ public class LabelController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Result findById(@PathVariable String id){
         return new Result(true, StatusCode.OK, "根据id查找标签成功！", labelService.findById(id));
     }

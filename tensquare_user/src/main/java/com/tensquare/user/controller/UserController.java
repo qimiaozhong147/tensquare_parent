@@ -1,4 +1,5 @@
 package com.tensquare.user.controller;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import com.tensquare.user.service.UserService;
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import util.JwtUtil;
+
 /**
  * 控制器层
  * @author Administrator
@@ -29,15 +32,34 @@ public class UserController {
 	@Autowired
     private RedisTemplate redisTemplate;
 
+	@Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * 用户登录
+     * @param user
+     * @return
+     */
     @RequestMapping(value="/login",method=RequestMethod.POST)
 	public Result login(@RequestBody User user){
 	    user = userService.findByMobileAndPassword(user);
 	    if(user != null){
-            return new Result(true, StatusCode.OK, "登录成功");
+	        String token = jwtUtil.createJWT(user.getId(), user.getNickname(), "user");
+	        Map map = new HashMap();
+	        map.put("token", token);
+	        map.put("name", user.getNickname());
+	        map.put("avatar", user.getAvatar());
+            return new Result(true, StatusCode.OK, "登录成功", map);
         }
         return new Result(true, StatusCode.ERROR, "用户名或密码错误");
     }
 
+    /**
+     * 用户注册
+     * @param code
+     * @param user
+     * @return
+     */
     @RequestMapping(value = "/register/{code}", method = RequestMethod.POST)
     public Result regist(@PathVariable String code, @RequestBody User user) {
 
@@ -135,6 +157,7 @@ public class UserController {
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.DELETE)
 	public Result delete(@PathVariable String id ){
+
 		userService.deleteById(id);
 		return new Result(true,StatusCode.OK,"删除成功");
 	}

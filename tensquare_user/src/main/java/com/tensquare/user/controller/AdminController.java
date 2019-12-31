@@ -1,7 +1,9 @@
 package com.tensquare.user.controller;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,6 +19,10 @@ import com.tensquare.user.service.AdminService;
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import util.JwtUtil;
+
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 控制器层
  * @author Administrator
@@ -30,11 +36,22 @@ public class AdminController {
 	@Autowired
 	private AdminService adminService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private HttpServletRequest request;
+
 	@RequestMapping(value="/login",method=RequestMethod.POST)
     public Result login(@RequestBody Admin admin){
         admin = adminService.findByLonginNameAndPassword(admin);
         if(admin != null){
-            return new Result(true, StatusCode.OK, "登录成功");
+            //这里写死了用户角色是admin
+            String token = jwtUtil.createJWT(admin.getId(), admin.getLoginname(), "admin");
+            Map map = new HashMap();
+            map.put("token", token);
+            map.put("name", admin.getLoginname());
+            return new Result(true, StatusCode.OK, "登录成功", map);
         }
         return new Result(true, StatusCode.ERROR, "用户名或密码错误");
     }
@@ -109,7 +126,11 @@ public class AdminController {
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.DELETE)
 	public Result delete(@PathVariable String id ){
-		adminService.deleteById(id);
+        Claims claims = (Claims) request.getAttribute("claims_admin");
+        if(claims == null || "".equals(claims)){
+            return new Result(false, StatusCode.ACCESSERROR, "权限不足");
+        }
+        adminService.deleteById(id);
 		return new Result(true,StatusCode.OK,"删除成功");
 	}
 	
