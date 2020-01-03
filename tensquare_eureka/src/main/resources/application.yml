@@ -5,4 +5,4 @@ eureka:
     register-with-eureka: false #是否将自己注册到eureka服务中，本身就是eureka服务，所以这里是false
     fetch-registry: false #是否从eureka中获取交互信息
     service-url: #Eureka客户端与Eureka服务端进行交互的地址
-      defaultZone: http://192.168.25.129:${server.port}/eureka/
+      defaultZone: http://192.168.154.29:${server.port}/eureka/
